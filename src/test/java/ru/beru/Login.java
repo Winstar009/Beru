@@ -5,32 +5,35 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class Login extends WebDriverInit {
+    public void auth()
+    {
+        driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] a").click();
+        driver.findElementByCssSelector("input[name='login']").sendKeys(dotenv.get("email"));
+        driver.findElementByCssSelector("button[type='submit']").click();
+        driver.findElementByCssSelector("input[name='passwd']").sendKeys(dotenv.get("password"));
+        driver.findElementByCssSelector("button[type='submit']").click();
+
+    }
+
     @Test
     public void authorization()
     {
-        WebElement widgetAuth_a =  getWebElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] a");
-        widgetAuth_a.click();
+        try
+        {
+            auth();
 
-        WebElement captcha = getWebElementByCssSelector("from[action='/checkcaptcha']");
-        Assert.assertNotNull(captcha, "met CAPTCHA");
+            WebElement button = driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] span");
+            button.click();
+            Thread.sleep(1000); //for show menu
+            Assert.assertEquals(button.getAttribute("innerHTML"), "Мой профиль");
 
-        WebElement input_login = getWebElementByCssSelector("input[name='login']");
-        Assert.assertNull(input_login, "missing input login");
-        input_login.sendKeys(dotenv.get("email"));
+            WebElement userName = driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/desktop/UserMenu'] span");
+            Assert.assertEquals(userName.getAttribute("innerHTML"), dotenv.get("user_name"));
 
-        WebElement button_submit_login = getWebElementByCssSelector("button[type='submit']");
-        Assert.assertNull(button_submit_login, "missing button submit");
-        button_submit_login.click();
-
-        WebElement input_password = getWebElementByCssSelector("input[name='password']");
-        Assert.assertNull(input_password, "missing input password");
-        input_password.sendKeys(dotenv.get("password"));
-
-        WebElement button_submit_password = getWebElementByCssSelector("button[type='submit']");
-        Assert.assertNull(button_submit_password, "missing button submit");
-        button_submit_password.click();
-
-        System.out.println(driver.location().toString());
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
-
 }
