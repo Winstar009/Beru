@@ -12,22 +12,20 @@ public class WebDriverInit {
     protected Dotenv dotenv;
 
     @BeforeClass
-    public void setUp()
-    {
+    public void setUp() {
         dotenv = Dotenv.load();
 
         System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/chromedriver.exe");
         driver = new ChromeDriver();
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
-        driver.manage().timeouts().pageLoadTimeout(30,TimeUnit.SECONDS);
+        driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
         driver.get("https://beru.ru/");
     }
 
     @AfterClass
-    public void SetDown()
-    {
+    public void SetDown() {
         driver.quit();
     }
 }

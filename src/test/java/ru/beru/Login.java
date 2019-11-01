@@ -1,15 +1,16 @@
 package ru.beru;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 public class Login extends WebDriverInit {
-    public void auth()
-    {
+    public void auth(ChromeDriver driver, Dotenv dotenv) {
         driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] a").click();
         driver.findElementByCssSelector("input[name='login']").sendKeys(dotenv.get("email"));
         driver.findElementByCssSelector("button[type='submit']").click();
@@ -18,11 +19,9 @@ public class Login extends WebDriverInit {
     }
 
     @Test
-    public void authorization()
-    {
-        try
-        {
-            auth();
+    public void authorization() {
+        try {
+            auth(driver, dotenv);
 
             WebElement button = driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] span");
             button.click();
@@ -35,9 +34,7 @@ public class Login extends WebDriverInit {
             WebElement userName = userMenu.findElement(By.cssSelector("span"));
             Assert.assertEquals(userName.getText(), dotenv.get("user_name"));
 
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

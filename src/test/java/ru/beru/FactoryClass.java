@@ -4,8 +4,7 @@ import org.testng.annotations.Factory;
 
 public class FactoryClass {
     @Factory
-    public Object[] invokeObjects()
-    {
+    public Object[] invokeObjects() {
         Object[] obj = new Object[3];
         obj[0] = new SimpleTests();
         obj[1] = new Login();

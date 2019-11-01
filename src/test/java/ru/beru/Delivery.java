@@ -11,11 +11,9 @@ import org.testng.annotations.Test;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class Delivery extends Login {
-    public void ChangeRegion(String regionName)
-    {
-        try
-        {
+public class Delivery extends WebDriverInit {
+    public void ChangeRegion(String regionName) {
+        try {
             driver.findElementByCssSelector("span[data-auto='region-form-opener']").click();
             WebElement inputCity = driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/RegionSelect'] input");
             inputCity.sendKeys(Keys.CONTROL + "a" + Keys.DELETE);
@@ -26,36 +24,30 @@ public class Delivery extends Login {
             listBoxRegion.findElement(By.cssSelector("li:first-child")).click();
 
             WebElement modal = driver.findElementByCssSelector("[data-auto='region-popup']");
-            if(modal.findElements(By.cssSelector("button:not([data-auto='select-button'])")).size() > 1)
-            {
+            if (modal.findElements(By.cssSelector("button:not([data-auto='select-button'])")).size() > 1) {
                 modal.findElement(By.cssSelector("div:last-child > button")).click();
-            }
-            else
-            {
+            } else {
                 modal.findElement(By.cssSelector("div:last-child > button")).click();
                 modal.findElement(By.cssSelector("div:last-child > button")).click();
             }
 
             (new WebDriverWait(driver, 30)).until(ExpectedConditions.invisibilityOf(modal));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void EqualsRegionAfterChange()
-    {
-        try
-        {
+    public void EqualsRegionAfterChange() {
+        try {
             ChangeRegion(dotenv.get("city"));
 
             WebElement city = (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector("span[data-auto='region-form-opener'] span[data-auto='region-form-opener']")));
             Assert.assertEquals(city.getText(), dotenv.get("city"));
 
-            auth();
+            Login login = new Login();
+            login.auth(driver, dotenv);
 
             WebElement button = driver.findElementByCssSelector("[data-apiary-widget-name='@marketplace/Auth'] span");
             button.click();
@@ -68,9 +60,7 @@ public class Delivery extends Login {
             city = driver.findElementByCssSelector("span[data-auto='region-form-opener'] span[data-auto='region-form-opener']");
             WebElement citySetting = driver.findElementByCssSelector("#region [data-auto='region']");
             Assert.assertEquals(city.getText(), citySetting.getText());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
