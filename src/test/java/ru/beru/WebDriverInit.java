@@ -8,6 +8,10 @@ import org.testng.annotations.BeforeClass;
 import java.util.concurrent.TimeUnit;
 
 public class WebDriverInit {
+    private final String PROPERTY_NAME_DRIVER = "webdriver.chrome.driver";
+    private final String PATH_TO_DRIVER = "/chromedriver.exe";
+    private final String SITE_URL = "https://beru.ru/";
+
     protected ChromeDriver driver;
     protected Dotenv dotenv;
 
@@ -15,13 +19,13 @@ public class WebDriverInit {
     public void setUp() {
         dotenv = Dotenv.load();
 
-        System.setProperty("webdriver.chrome.driver", System.getProperty("user.dir") + "/chromedriver.exe");
+        System.setProperty(PROPERTY_NAME_DRIVER, System.getProperty("user.dir") + PATH_TO_DRIVER);
         driver = new ChromeDriver();
         driver.manage().deleteAllCookies();
         driver.manage().window().maximize();
         driver.manage().timeouts().pageLoadTimeout(30, TimeUnit.SECONDS);
         driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
-        driver.get("https://beru.ru/");
+        driver.get(SITE_URL);
     }
 
     @AfterClass
