@@ -10,6 +10,7 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class Basket extends WebDriverInit {
     private final String INPUT_SEARCH = "[data-apiary-widget-name='@marketplace/SearchForm'] input[type='search']";
@@ -18,7 +19,6 @@ public class Basket extends WebDriverInit {
     private final String A_LAST_BREADCRUMBS = "div:last-child>div>a";
 
     private final String INPUTS_FILTER = "[data-apiary-widget-name='@marketplace/SearchFilters'] input, [data-zone-name='filters'] input";
-    private final String SEARCH_RESULT = "[data-apiary-widget-name='@marketplace/SearchSerp'], .n-filter-applied-results";
 
     private final String PRELOADER_MASK = "[data-apiary-widget-name='@marketplace/SearchSerp'] div>div>div>div>div>div>div>div>div>span, .preloadable__preloader>.spin2";
 
@@ -35,6 +35,20 @@ public class Basket extends WebDriverInit {
     private final String BUTTON_ADD_TO_BASKET = "[data-apiary-widget-name='@marketplace/SkuCart'] button";
     private final String BUTTOUN_GO_TO_BASKET = "[data-apiary-widget-name='@marketplace/SkuCartUpsale'] [data-auto='modal'] a button";
 
+    private final String FREE_DELIVERY_STATUS_PRICE_UP = "[data-apiary-widget-name='@marketplace/CartDeliveryThreshold'] span>span";
+    private final String FREE_DELIVERY_ACCEPTED = "[data-apiary-widget-name='@marketplace/CartDeliveryThreshold'] span>b";
+    private final String B_FREE_DELIVERY_ACCEPTED_MESSAGE = "бесплатную доставку";
+    private final Integer FREE_DELIVERY = 2499;
+
+    private final String STORE_STATUS_MESSAGE = "[data-apiary-widget-name='@marketplace/CartList']>div>div>div>div>div>div>div>div>div>div>div>div>div>div>div:first-child>div>div>span>span";
+    private final String STORE_STATUS_MESSAGE_NO_LIMIT = "В наличии на складе";
+
+    private final String SPAN_TOTAL_PRICE = "[data-apiary-widget-name='@marketplace/CartTotalPrice']>div>div:last-child>span:last-child";
+
+    private final String BUTTON_PLUS = "[data-apiary-widget-name='@marketplace/CartList'] button:last-child";
+    private final String BASKET_PRELOADER_MASK = "[data-apiary-widget-name='@marketplace/CartTotalInformation']>div>div>div>div>div>div:last-child>div:not([data-apiary-widget-name='@marketplace/CartTotalPrice'])>div>div>span";
+    private final String INPUT_COUNT_ITEM_BASKET = "[data-apiary-widget-name='@marketplace/CartList'] input";
+
     public void goCatalogSection(ChromeDriver driver, String section) {
         try {
             driver.findElementByCssSelector(INPUT_SEARCH).sendKeys(section);
@@ -48,12 +62,12 @@ public class Basket extends WebDriverInit {
         }
     }
 
-    public void waitToPreloader() {
+    public void waitToPreloader(String selector) {
         try {
-            WebElement preloader = (new WebDriverWait(driver, 30))
-                    .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(PRELOADER_MASK)));
+            WebElement preloader = (new WebDriverWait(driver, 30,50))
+                    .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(selector)));
 
-            (new WebDriverWait(driver, 30))
+            (new WebDriverWait(driver, 30, 1500))
                     .until(ExpectedConditions.invisibilityOf(preloader));
         } catch (Exception e) {
             e.printStackTrace();
@@ -66,17 +80,20 @@ public class Basket extends WebDriverInit {
             price.get(0).sendKeys(price_From);
             price.get(1).sendKeys(price_To);
 
-            waitToPreloader();
+            waitToPreloader(PRELOADER_MASK);
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void checkPrice(String price_From, String price_To, List<WebElement> prices) {
+    public void checkPrice(Actions actions, String price_From, String price_To, List<WebElement> prices) {
         Integer price_a = Integer.parseInt(price_From);
         Integer price_b = Integer.parseInt(price_To);
 
         for (Integer i = 0; i < prices.size(); i++) {
+            actions.moveToElement(prices.get(i));
+            actions.perform();
+
             Integer p = Integer.parseInt(prices.get(i).getText().replaceAll(" ", ""));
             Assert.assertTrue(price_a <= p);
             Assert.assertTrue(p <= price_b);
@@ -87,19 +104,23 @@ public class Basket extends WebDriverInit {
         try {
             Actions actions = new Actions(driver);
 
+            driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
             List<WebElement> buttonNextPage = driver.findElementsByCssSelector(BUTTON_NEXT_PAGE);
+            driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
             do {
                 List<WebElement> itemsPrices = driver.findElementsByCssSelector(SPAN_PRICE);
-                checkPrice(price_From, price_To, itemsPrices);
+                checkPrice(actions, price_From, price_To, itemsPrices);
 
                 if (buttonNextPage.size() != 0) {
                     actions.moveToElement(buttonNextPage.get(0));
                     actions.perform();
 
                     buttonNextPage.get(0).click();
-                    waitToPreloader();
+                    waitToPreloader(PRELOADER_MASK);
 
+                    driver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
                     buttonNextPage = driver.findElementsByCssSelector(BUTTON_NEXT_PAGE);
+                    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
                 }
             }
             while (buttonNextPage.size() != 0);
@@ -108,13 +129,13 @@ public class Basket extends WebDriverInit {
         }
     }
 
-    public void goItemDetailPage(ChromeDriver driver) {
+    public void goItemDetailPage(ChromeDriver driver, Integer pos) {
         Actions actions = new Actions(driver);
         List<WebElement> itemsPrices = driver.findElementsByCssSelector(SPAN_PRICE);
 
-        actions.moveToElement(itemsPrices.get(itemsPrices.size() - 2));
+        actions.moveToElement(itemsPrices.get(itemsPrices.size() - pos - 1));
         actions.perform();
-        itemsPrices.get(itemsPrices.size() - 2).click();
+        itemsPrices.get(itemsPrices.size() - pos - 1).click();
     }
 
     public Integer priceOneItemDetail(ChromeDriver driver) {
@@ -128,23 +149,23 @@ public class Basket extends WebDriverInit {
                 .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(BUTTOUN_GO_TO_BASKET))).click();
     }
 
-    public Integer getPriceOneItemList(ChromeDriver driver) {
+    public Integer getPriceOneItemList(ChromeDriver driver, Integer pos) {
         Actions actions = new Actions(driver);
         List<WebElement> itemsPrices = driver.findElementsByCssSelector(SPAN_PRICE);
 
-        actions.moveToElement(itemsPrices.get(itemsPrices.size() - 2));
+        actions.moveToElement(itemsPrices.get(itemsPrices.size() - pos - 1));
         actions.perform();
 
-        return Integer.parseInt(itemsPrices.get(itemsPrices.size() - 2).getText().replaceAll(" ", ""));
+        return Integer.parseInt(itemsPrices.get(itemsPrices.size() - pos - 1).getText().replaceAll(" ", ""));
     }
 
-    public void addItemToBasketGoBasket(ChromeDriver driver) {
+    public void addItemToBasketGoBasket(ChromeDriver driver, Integer pos) {
         Actions actions = new Actions(driver);
         List<WebElement> itemsPrices = driver.findElementsByCssSelector(BUTTON_ADD_TO_BASKET_IN_LIST);
 
-        actions.moveToElement(itemsPrices.get(itemsPrices.size() - 2));
+        actions.moveToElement(itemsPrices.get(itemsPrices.size() - pos - 1));
         actions.perform();
-        itemsPrices.get(itemsPrices.size() - 2).click();
+        itemsPrices.get(itemsPrices.size() - pos - 1).click();
 
         (new WebDriverWait(driver, 30))
                 .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(BUTTON_ADD_TO_BASKET_IN_CARD))).click();
@@ -157,8 +178,49 @@ public class Basket extends WebDriverInit {
         */
     }
 
-    public void addMoreItem(ChromeDriver driver, Integer price) {
+    public void checkDelivery(ChromeDriver driver, Integer summ) {
+        if(summ < FREE_DELIVERY) {
+            Integer price_up = Integer.parseInt(driver.findElementByCssSelector(FREE_DELIVERY_STATUS_PRICE_UP).getText().replaceAll(" ","").replaceAll("\u20BD",""));
+            Assert.assertEquals(Integer.valueOf(FREE_DELIVERY - summ), Integer.valueOf(price_up));
+        } else {
+            String deliveryStatus = driver.findElementByCssSelector(FREE_DELIVERY_ACCEPTED).getText();
+            Assert.assertEquals(deliveryStatus, B_FREE_DELIVERY_ACCEPTED_MESSAGE);
+        }
+    }
 
+    public void checkStore(ChromeDriver driver) {
+        String storeMessage = driver.findElementByCssSelector(STORE_STATUS_MESSAGE).getText();
+        Assert.assertEquals(STORE_STATUS_MESSAGE_NO_LIMIT, storeMessage);
+    }
+
+    public void checkTotalPrice(ChromeDriver driver, Integer summ) {
+        Integer totalPrice = Integer.parseInt(driver.findElementByCssSelector(SPAN_TOTAL_PRICE).getText().replaceAll(" ", "").replaceAll("\u20BD", ""));
+        Assert.assertEquals(summ, totalPrice);
+    }
+
+    public void addMoreItem(ChromeDriver driver, Integer price, Integer minSumm) {
+        try {
+            waitToPreloader(BASKET_PRELOADER_MASK);
+            Integer count = 1;
+
+            checkDelivery(driver, price * count);
+
+            while (price * count < minSumm) {
+                driver.findElementByCssSelector(BUTTON_PLUS).click();
+                waitToPreloader(BASKET_PRELOADER_MASK);
+                checkStore(driver);
+
+                count = Integer.parseInt(driver.findElementByCssSelector(INPUT_COUNT_ITEM_BASKET).getAttribute("value"));
+                checkDelivery(driver, price * count);
+                checkTotalPrice(driver, price * count);
+            }
+            Thread.sleep(5000);
+            checkStore(driver);
+            checkDelivery(driver, price * count);
+            checkTotalPrice(driver, price * count);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -168,12 +230,14 @@ public class Basket extends WebDriverInit {
             goCatalogSection(driver, dotenv.get("section"));
             setFilter(driver, dotenv.get("price_from"), dotenv.get("price_to"));
             checkItemsPrice(driver, dotenv.get("price_from"), dotenv.get("price_to"));
-            //goItemDetailPage(driver);
+
+            //goItemDetailPage(driver, Integer.parseInt(dotenv.get("position_form_end")));
             //priceOneItemDetail = getPriceOneItem(driver);
             //addToBasket(driver);
-            priceOneItem = getPriceOneItemList(driver);
-            addItemToBasketGoBasket(driver);
-            addMoreItem(driver, priceOneItem);
+
+            priceOneItem = getPriceOneItemList(driver, Integer.parseInt(dotenv.get("position_form_end")));
+            addItemToBasketGoBasket(driver, Integer.parseInt(dotenv.get("position_form_end")));
+            addMoreItem(driver, priceOneItem, Integer.parseInt(dotenv.get("min_summ")));
 
         } catch (Exception e) {
             e.printStackTrace();
