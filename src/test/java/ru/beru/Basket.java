@@ -7,6 +7,7 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 import java.util.List;
@@ -224,20 +225,21 @@ public class Basket extends WebDriverInit {
     }
 
     @Test
-    public void CheckBasket() {
+    @Parameters({"catalogSection", "priceFrom", "priceTo", "positionFromEnd", "minSum"})
+    public void CheckBasket(String catalogSection, String priceFrom, String priceTo, String positionFromEnd, String minSum) {
         Integer priceOneItem;
         try {
-            goCatalogSection(driver, dotenv.get("section"));
-            setFilter(driver, dotenv.get("price_from"), dotenv.get("price_to"));
-            checkItemsPrice(driver, dotenv.get("price_from"), dotenv.get("price_to"));
+            goCatalogSection(driver, catalogSection);
+            setFilter(driver, priceFrom, priceTo);
+            checkItemsPrice(driver, priceFrom, priceTo);
 
-            //goItemDetailPage(driver, Integer.parseInt(dotenv.get("position_form_end")));
+            //goItemDetailPage(driver, Integer.parseInt(positionFromEnd));
             //priceOneItemDetail = getPriceOneItem(driver);
             //addToBasket(driver);
 
-            priceOneItem = getPriceOneItemList(driver, Integer.parseInt(dotenv.get("position_form_end")));
-            addItemToBasketGoBasket(driver, Integer.parseInt(dotenv.get("position_form_end")));
-            addMoreItem(driver, priceOneItem, Integer.parseInt(dotenv.get("min_summ")));
+            priceOneItem = getPriceOneItemList(driver, Integer.parseInt(positionFromEnd));
+            addItemToBasketGoBasket(driver, Integer.parseInt(positionFromEnd));
+            addMoreItem(driver, priceOneItem, Integer.parseInt(minSum));
 
         } catch (Exception e) {
             e.printStackTrace();

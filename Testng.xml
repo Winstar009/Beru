@@ -1,0 +1,24 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+
+<suite name="SeleniumTest" verbose="1">
+    <test name="BeruTest">
+        <parameter name="browser" value="chrome" />
+
+        <parameter name = "region" value="Хвалынск"/>
+        <parameter name = "email" value="autotestMV@yandex.ru"/>
+        <parameter name = "password" value="mv1234567890"/>
+        <parameter name = "userName" value="Михаил Васильев"/>
+        <parameter name = "catalogSection" value="Электрические зубные щетки"/>
+        <parameter name = "priceFrom" value="999"/>
+        <parameter name = "priceTo" value="1999"/>
+        <parameter name = "positionFromEnd" value="2"/>
+        <parameter name = "minSum" value="2999"/>
+
+        <classes>
+            <class name="ru.beru.SimpleTests" />
+            <class name="ru.beru.Login" />
+            <class name="ru.beru.Delivery" />
+            <class name="ru.beru.Basket" />
+        </classes>
+    </test>
+</suite>

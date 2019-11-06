@@ -1,6 +1,5 @@
 package ru.beru;
 
-import io.github.cdimascio.dotenv.Dotenv;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -13,12 +12,9 @@ public class WebDriverInit {
     private final String SITE_URL = "https://beru.ru/";
 
     protected ChromeDriver driver;
-    protected Dotenv dotenv;
 
     @BeforeClass
     public void setUp() {
-        dotenv = Dotenv.load();
-
         System.setProperty(PROPERTY_NAME_DRIVER, System.getProperty("user.dir") + PATH_TO_DRIVER);
         driver = new ChromeDriver();
         driver.manage().deleteAllCookies();

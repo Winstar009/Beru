@@ -6,10 +6,8 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
-
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class Delivery extends WebDriverInit {
     private final String SPAN_REGION_MODAL_OPENER = "span[data-auto='region-form-opener']";
@@ -52,16 +50,17 @@ public class Delivery extends WebDriverInit {
     }
 
     @Test
-    public void EqualsRegionAfterChange() {
+    @Parameters({"region", "email", "password"})
+    public void EqualsRegionAfterChange(String region, String email, String password) {
         try {
-            ChangeRegion(dotenv.get("city"));
+            ChangeRegion(region);
 
             WebElement city = (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(SPAN_REGION_NAME)));
-            Assert.assertEquals(city.getText(), dotenv.get("city"));
+            Assert.assertEquals(city.getText(), region);
 
             Login login = new Login();
-            login.auth(driver, dotenv.get("email"), dotenv.get("password"));
+            login.auth(driver, email, password);
 
             WebElement button = driver.findElementByCssSelector(SPAN_AUTH);
             button.click();

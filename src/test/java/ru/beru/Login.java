@@ -1,11 +1,11 @@
 package ru.beru;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
+import org.testng.annotations.Parameters;
 import org.testng.annotations.Test;
 
 public class Login extends WebDriverInit {
@@ -28,9 +28,10 @@ public class Login extends WebDriverInit {
     }
 
     @Test
-    public void authorization() {
+    @Parameters({"email", "password", "userName"})
+    public void authorization(String email, String password, String userName) {
         try {
-            auth(driver, dotenv.get("email"), dotenv.get("password"));
+            auth(driver, email, password);
 
             WebElement button = driver.findElementByCssSelector(SPAN_AUTH);
             Assert.assertEquals(button.getText(), "Мой профиль");
@@ -40,8 +41,8 @@ public class Login extends WebDriverInit {
             (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(USER_MENU)));
 
-            WebElement userName = driver.findElementByCssSelector(USER_NAME);
-            Assert.assertEquals(userName.getText(), dotenv.get("user_name"));
+            WebElement userNameElement = driver.findElementByCssSelector(USER_NAME);
+            Assert.assertEquals(userNameElement.getText(), userName);
 
         } catch (Exception e) {
             e.printStackTrace();
