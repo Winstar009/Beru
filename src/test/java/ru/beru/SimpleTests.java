@@ -6,8 +6,8 @@ import org.testng.annotations.Test;
 public class SimpleTests extends WebDriverInit {
     private final String TITLE = "Маркетплейс Беру - большой ассортимент товаров из интернет-магазинов с быстрой доставкой и по выгодным ценам";
 
-    @Test
-    public void equalsTitle() {
+    @Test(description = "Check title site.")
+    private void equalsTitle() {
         Assert.assertEquals(driver.getTitle(), TITLE);
     }
 }

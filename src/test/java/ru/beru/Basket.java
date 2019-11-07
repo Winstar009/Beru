@@ -50,7 +50,7 @@ public class Basket extends WebDriverInit {
     private final String BASKET_PRELOADER_MASK = "[data-apiary-widget-name='@marketplace/CartTotalInformation']>div>div>div>div>div>div:last-child>div:not([data-apiary-widget-name='@marketplace/CartTotalPrice'])>div>div>span";
     private final String INPUT_COUNT_ITEM_BASKET = "[data-apiary-widget-name='@marketplace/CartList'] input";
 
-    public void goCatalogSection(ChromeDriver driver, String section) {
+    public void goCatalogSection(ChromeDriver driver, String section) throws Exception {
         try {
             driver.findElementByCssSelector(INPUT_SEARCH).sendKeys(section);
             driver.findElementByCssSelector(BUTTON_SEARCH).click();
@@ -63,7 +63,7 @@ public class Basket extends WebDriverInit {
         }
     }
 
-    public void waitToPreloader(String selector) {
+    public void waitToPreloader(String selector) throws Exception {
         try {
             WebElement preloader = (new WebDriverWait(driver, 30,50))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(selector)));
@@ -75,7 +75,7 @@ public class Basket extends WebDriverInit {
         }
     }
 
-    public void setFilter(ChromeDriver driver, String price_From, String price_To) {
+    public void setFilter(ChromeDriver driver, String price_From, String price_To) throws Exception {
         try {
             List<WebElement> price = driver.findElementsByCssSelector(INPUTS_FILTER);
             price.get(0).sendKeys(price_From);
@@ -101,7 +101,7 @@ public class Basket extends WebDriverInit {
         }
     }
 
-    public void checkItemsPrice(ChromeDriver driver, String price_From, String price_To) {
+    public void checkItemsPrice(ChromeDriver driver, String price_From, String price_To) throws Exception {
         try {
             Actions actions = new Actions(driver);
 
@@ -199,14 +199,14 @@ public class Basket extends WebDriverInit {
         Assert.assertEquals(summ, totalPrice);
     }
 
-    public void addMoreItem(ChromeDriver driver, Integer price, Integer minSumm) {
+    public void addMoreItem(ChromeDriver driver, Integer price, Integer minSum) throws Exception {
         try {
             waitToPreloader(BASKET_PRELOADER_MASK);
             Integer count = 1;
 
             checkDelivery(driver, price * count);
 
-            while (price * count < minSumm) {
+            while (price * count < minSum) {
                 driver.findElementByCssSelector(BUTTON_PLUS).click();
                 waitToPreloader(BASKET_PRELOADER_MASK);
                 checkStore(driver);
@@ -226,7 +226,7 @@ public class Basket extends WebDriverInit {
 
     @Test
     @Parameters({"catalogSection", "priceFrom", "priceTo", "positionFromEnd", "minSum"})
-    public void CheckBasket(String catalogSection, String priceFrom, String priceTo, String positionFromEnd, String minSum) {
+    public void CheckBasket(String catalogSection, String priceFrom, String priceTo, String positionFromEnd, String minSum) throws Exception {
         Integer priceOneItem;
         try {
             goCatalogSection(driver, catalogSection);

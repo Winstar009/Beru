@@ -19,20 +19,25 @@ public class Login extends WebDriverInit {
     private final String USER_MENU = "[data-apiary-widget-name='@marketplace/desktop/UserMenu']";
     private final String USER_NAME = "[data-apiary-widget-name='@marketplace/desktop/UserMenu'] span";
 
-    public void auth(ChromeDriver driver, String login, String password) {
+    @Test(testName = "auth", description = "Authorization user.", priority = 0)
+    @Parameters({"email", "password"})
+    private void auth(String email, String password) {
         driver.findElementByCssSelector(A_AUTH).click();
-        driver.findElementByCssSelector(INPUT_LOGIN).sendKeys(login);
+        driver.findElementByCssSelector(INPUT_LOGIN).sendKeys(email);
         driver.findElementByCssSelector(BUTTON_SUBMIT).click();
         driver.findElementByCssSelector(INPUT_PASSWORD).sendKeys(password);
         driver.findElementByCssSelector(BUTTON_SUBMIT).click();
     }
 
-    @Test
-    @Parameters({"email", "password", "userName"})
-    public void authorization(String email, String password, String userName) {
-        try {
-            auth(driver, email, password);
+    public void outerInitAuth(String email, String password, ChromeDriver driver) {
+        this.driver = driver;
+        auth(email, password);
+    }
 
+    @Test(description = "Check change name button and set user name.", priority = 1)
+    @Parameters({"userName"})
+    private void checkUserName(String userName) throws Exception {
+        try {
             WebElement button = driver.findElementByCssSelector(SPAN_AUTH);
             Assert.assertEquals(button.getText(), "Мой профиль");
 

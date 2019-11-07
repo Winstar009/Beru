@@ -6,8 +6,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Assert;
-import org.testng.annotations.Parameters;
-import org.testng.annotations.Test;
+import org.testng.annotations.*;
 
 public class Delivery extends WebDriverInit {
     private final String SPAN_REGION_MODAL_OPENER = "span[data-auto='region-form-opener']";
@@ -24,53 +23,78 @@ public class Delivery extends WebDriverInit {
     private final String LI_LAST_A = "li:last-child a";
     private final String USER_SETTING_REGION_NAME = "#region [data-auto='region']";
 
-    public void ChangeRegion(String regionName) {
+    @Test(description = "Change region in modal.", priority = 0, groups = "changeRegion")
+    @Parameters({"region"})
+    private void changeRegion(String region) throws Exception {
         try {
-            driver.findElementByCssSelector(SPAN_REGION_MODAL_OPENER).click();
             WebElement inputCity = driver.findElementByCssSelector(INPUT_REGION_NAME);
             inputCity.sendKeys(Keys.CONTROL + "a" + Keys.DELETE);
-            inputCity.sendKeys(regionName);
+            inputCity.sendKeys(region);
 
             WebElement listBoxRegion = (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(LIST_REGION)));
             listBoxRegion.findElement(By.cssSelector(LI_FIRST_ELEMENT_REGION)).click();
-
-            WebElement modal = driver.findElementByCssSelector(REGION_MODAL);
-            if (modal.findElements(By.cssSelector(BUTTONS_MODAL)).size() > 1) {
-                modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
-            } else {
-                modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
-                modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
-            }
-
-            (new WebDriverWait(driver, 30)).until(ExpectedConditions.invisibilityOf(modal));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    @Test
-    @Parameters({"region", "email", "password"})
-    public void EqualsRegionAfterChange(String region, String email, String password) {
-        try {
-            ChangeRegion(region);
+    @BeforeGroups("changeRegion")
+    private void openModal() {
+        driver.findElementByCssSelector(SPAN_REGION_MODAL_OPENER).click();
+    }
 
+    @AfterGroups("changeRegion")
+    private void closeModal() {
+        WebElement modal = driver.findElementByCssSelector(REGION_MODAL);
+        if (modal.findElements(By.cssSelector(BUTTONS_MODAL)).size() > 1) {
+            modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
+        } else {
+            modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
+            modal.findElement(By.cssSelector(BUTTON_LAST_MODAL)).click();
+        }
+
+        (new WebDriverWait(driver, 30)).until(ExpectedConditions.invisibilityOf(modal));
+    }
+
+    @Test(description = "Check region in header.", priority = 1)
+    @Parameters({"region"})
+    private void checkRegionHeader(String region) throws Exception {
+        try {
             WebElement city = (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(SPAN_REGION_NAME)));
             Assert.assertEquals(city.getText(), region);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            Login login = new Login();
-            login.auth(driver, email, password);
+    @Test(description = "Authorization user.", priority = 2)
+    @Parameters({"email", "password"})
+    private void auth(String email, String password) {
+        Login login = new Login();
+        login.outerInitAuth(email, password, driver);
+    }
 
+    @Test(description = "Go to setting.", priority = 3)
+    private void goSetting() throws Exception {
+        try {
             WebElement button = driver.findElementByCssSelector(SPAN_AUTH);
             button.click();
 
             WebElement userMenu = (new WebDriverWait(driver, 30))
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(USER_MENU)));
-
             userMenu.findElements(By.cssSelector("ul")).get(2).findElement(By.cssSelector(LI_LAST_A)).click();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
-            city = driver.findElementByCssSelector(SPAN_REGION_NAME);
+    @Test(description = "Equals region in header and in setting.", priority = 4)
+    @Parameters({"region"})
+    private void checkRegionSetting(String region) throws Exception {
+        try {
+            WebElement city = driver.findElementByCssSelector(SPAN_REGION_NAME);
             WebElement citySetting = driver.findElementByCssSelector(USER_SETTING_REGION_NAME);
             Assert.assertEquals(city.getText(), citySetting.getText());
         } catch (Exception e) {

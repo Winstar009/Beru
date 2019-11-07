@@ -13,8 +13,8 @@ public class WebDriverInit {
 
     protected ChromeDriver driver;
 
-    @BeforeClass
-    public void setUp() {
+    @BeforeClass(description = "Starting browser.")
+    public void init() {
         System.setProperty(PROPERTY_NAME_DRIVER, System.getProperty("user.dir") + PATH_TO_DRIVER);
         driver = new ChromeDriver();
         driver.manage().deleteAllCookies();
@@ -24,8 +24,17 @@ public class WebDriverInit {
         driver.get(SITE_URL);
     }
 
-    @AfterClass
-    public void SetDown() {
+    @AfterClass(description = "Close browser.")
+    public void exit() {
+        driver.close();
         driver.quit();
     }
+
+    private final String A_HOME = "a[href='/']";
+/*
+    @AfterClass(description = "Return to default state")
+    private void goHome() {
+        driver.findElementByCssSelector(A_HOME).click();
+    }
+*/
 }
