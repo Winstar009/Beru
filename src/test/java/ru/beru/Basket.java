@@ -157,6 +157,7 @@ public class Basket extends WebDriverInit {
             Actions actions = new Actions(driver);
             List<WebElement> itemsPrices = driver.findElementsByCssSelector(BUTTON_ADD_TO_BASKET_IN_LIST);
 
+            pos = itemsPrices.size() > 1 ? pos : 0;
             actions.moveToElement(itemsPrices.get(itemsPrices.size() - pos - 1));
             actions.perform();
 

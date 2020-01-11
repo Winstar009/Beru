@@ -98,7 +98,7 @@ public class Delivery extends WebDriverInit {
                     .until(ExpectedConditions.visibilityOf(driver.findElementByCssSelector(USER_MENU)));
 
             //userMenu.findElements(By.cssSelector("ul")).get(2).findElement(By.cssSelector(LI_LAST_A)).click();
-            click(userMenu.findElements(By.cssSelector("ul")).get(2).findElement(By.cssSelector(LI_LAST_A)));
+            click(userMenu.findElements(By.cssSelector("ul")).get(3).findElement(By.cssSelector(LI_LAST_A)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -112,6 +112,8 @@ public class Delivery extends WebDriverInit {
             WebElement citySetting = driver.findElementByCssSelector(USER_SETTING_REGION_NAME);
 
             //Assert.assertEquals(city.getText(), citySetting.getText());
+            Assert.assertEquals(getText(city), region);
+            Assert.assertEquals(getText(citySetting), region);
             Assert.assertEquals(getText(city), getText(citySetting));
         } catch (Exception e) {
             e.printStackTrace();
