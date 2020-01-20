@@ -25,7 +25,7 @@ public class Basket extends WebDriverInit {
 
     private final String BUTTON_NEXT_PAGE = "[data-auto='pagination-next'], .n-pager__button-next";
 
-    private final String SPAN_PRICE = "[data-auto='price'] span>span:first-child, [data-zone-name='SearchSerp'] span>span:first-child>span:first-child, .n-snippet-list span>span:first-child>span:first-child";
+    private final String SPAN_PRICE = "[data-zone-name='SearchSerp']:first-child [data-auto='price'] span>span:first-child, [data-zone-name='SearchSerp']:first-child span>span:first-child>span:first-child, .n-snippet-list span>span:first-child>span:first-child";
 
     private final String SPAN_ITEM_PRICE = "[data-auto='cart-item']:first-child [data-auto='price']>span>span:first-child, [data-apiary-widget-name='@marketplace/CartList'] [data-auto='cart-item']:first-child span>span:first-child>span:first-child";
 
