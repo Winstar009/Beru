@@ -15,9 +15,9 @@
     </test>
 
     <test name="LoginTest">
-        <parameter name = "email" value="autotestMV@yandex.ru"/>
-        <parameter name = "password" value="mv123456"/>
-        <parameter name = "userName" value="Михаил Васильев"/>
+        <parameter name = "email" value="email"/>
+        <parameter name = "password" value="password"/>
+        <parameter name = "userName" value="userName"/>
 
         <classes>
             <class name="ru.beru.Login"/>
@@ -26,8 +26,8 @@
 
     <test name="DeliveryTest">
         <parameter name = "region" value="Хвалынск"/>
-        <parameter name = "email" value="autotestMV@yandex.ru"/>
-        <parameter name = "password" value="mv123456"/>
+        <parameter name = "email" value="email"/>
+        <parameter name = "password" value="password"/>
 
         <classes>
             <class name="ru.beru.Delivery" />
