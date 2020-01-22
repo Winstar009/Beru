@@ -21,7 +21,7 @@ public class Basket extends WebDriverInit {
 
     private final String INPUTS_FILTER = "[data-apiary-widget-name='@marketplace/SearchFilters'] input, [data-zone-name='filters'] input";
 
-    private final String PRELOADER_MASK = "[data-apiary-widget-name='@marketplace/SearchSerp'] div>div>div>div>div>div>div>div>div>span, .preloadable__preloader>.spin2";
+    private final String PRELOADER_MASK = "[data-apiary-widget-name='@marketplace/SearchSerp'] div>div>div>div>div>div>div>div>div>span, [data-apiary-widget-name='@marketplace/SearchSerp'] div>div>div>div>div>div>div>div>span, .preloadable__preloader>.spin2";
 
     private final String BUTTON_NEXT_PAGE = "[data-auto='pagination-next'], .n-pager__button-next";
 
@@ -37,7 +37,8 @@ public class Basket extends WebDriverInit {
     private final String B_FREE_DELIVERY_ACCEPTED_MESSAGE = "бесплатную доставку";
     private final Integer FREE_DELIVERY = 2499;
 
-    private final String STORE_STATUS_MESSAGE = "[data-apiary-widget-name='@marketplace/CartList']>div>div>div>div>div>div>div>div>div>div>div>div>div>div>div:first-child>div>div>span>span";
+    // private final String STORE_STATUS_MESSAGE = "[data-apiary-widget-name='@marketplace/CartList']>div>div>div>div>div>div>div>div>div>div>div>div>div>div>div:first-child>div>div>span>span";
+    private final String STORE_STATUS_MESSAGE = "[data-apiary-widget-name='@marketplace/CartList']>div>div>div>div>div>div>div>div>div>div>div>div>div>div:first-child>div>div>span>span";
     private final String STORE_STATUS_MESSAGE_NO_LIMIT = "В наличии на складе";
 
     private final String SPAN_TOTAL_PRICE = "[data-apiary-widget-name='@marketplace/CartTotalPrice']>div>div:last-child>span:last-child";
